@@ -53,6 +53,10 @@ make
 make check
 make install
 
+Finally with install complete go ahead and add the fastjet build directory to your path
+
+export PATH=$PATH:/PATH/TO/TAR/fastjet-install/bin
+
 **** Running this repository ****
 
 For the convenience of the Makefile, start by editing setLearnGenJets.sh for the paths appropriate to your system. Doing this explicitly makes potential version conflicts easier to handle. Once you have added the full set of paths appropriate to your system, do
@@ -60,3 +64,24 @@ For the convenience of the Makefile, start by editing setLearnGenJets.sh for the
 source setLearnGenJets.sh
 
 This will set those environmental variables for your session. If they are not set, running make will fail with request you run source.
+
+with all paths set properly, run
+
+make
+
+if build is successful, go ahead and run
+
+./bin/simplePYTHIA.exe
+
+this will create a file w/ ttree containing particle content of pythia8 pp events at sqrts = 5.02 TeV, a very simple implementation of LHC like conditions with bias to hard scatterings of transverse energy of 80 GeV
+
+the file can be found under output/TODAYSDATE
+
+If successful, we can then run jet clustering:
+
+./bin/simpleFastjet.exe output/TODAYSDATE/PYTHIAFILENAME
+
+or substitute your own pythia file
+
+this will create an output in output/TODAYSDATE with a jet TTree
+

@@ -16,8 +16,10 @@ MKDIR_PDF=mkdir -p $(PWD)/pdfDir
 INCLUDE=-I$(LEARNGENJETSDIR)
 ROOT=`root-config --cflags --glibs`
 PYTHIA8=-I$(PYTHIA8PATH)/include -O2 -pedantic -W -Wall -Wshadow -fPIC -L$(PYTHIA8PATH)/lib -Wl,-rpath,$(PYTHIA8PATH)/lib -lpythia8 -ldl
+FASTJET=`fastjet-config --cxxflags --libs`
+FASTJETINCLUDE=-I$(FASTJETPATH)
 
-all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe
+all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe bin/simpleFastjet.exe
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -30,6 +32,9 @@ mkdirPdf:
 
 bin/simplePYTHIA.exe: src/simplePYTHIA.C
 	$(CXX) $(CXXFLAGS) src/simplePYTHIA.C $(ROOT) $(PYTHIA8) $(INCLUDE) -o bin/simplePYTHIA.exe
+
+bin/simpleFastjet.exe: src/simpleFastjet.C
+	$(CXX) $(CXXFLAGS) src/simpleFastjet.C $(ROOT) $(FASTJET) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjet.exe
 
 clean:
 	rm -f ./*~
