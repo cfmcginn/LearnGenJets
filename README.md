@@ -13,11 +13,21 @@ You will also want to grab the fastjet contrib, version 1.041 as of creation.
 
 In addition to PYTHIA8 and FastJet, this code will use ROOT6 classes for storage. Source code and instructions for installation are beyond this repo, but you can look here if installation is necessary: https://root.cern.ch/downloading-root
 
+If you dont intend to install to your laptop then there are public builds available on lxplus here:
+
+/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/
+
+Can be used on lxplus or on svmithi02
+
 **** PYTHIA INSTALL ****
 
-With pythia8240.tar.gz in appropriate subdirectory (recommend keeping packages for physics in single well defined directory) do
+Grab tar with
 
-tar -xzvf pythia8240.tar.gz #or whatever the version name is
+curl -O http://home.thep.lu.se/~torbjorn/pythia8/pythia8240.tgz
+
+With pythia8240.tgz in appropriate subdirectory (recommend keeping packages for physics in single well defined directory) do
+
+tar -xzvf pythia8240.tgz #or whatever the version name is
 cd pythia8240
 ./configure --prefix=/PATH/TO/TAR/pythia8-build --arch=<SEE README>
 
@@ -33,6 +43,11 @@ export PATH=$PATH:/PATH/TO/TAR/pythia8-build/bin
 Recommend adding above to your .bash_profile or .bashrc file so it is done w/ each fresh terminal session.
 
 **** FastJet INSTALL ****
+
+Get FastJet and contrib with
+
+curl -O http://fastjet.fr/repo/fastjet-3.3.2.tar.gz
+wget http://fastjet.hepforge.org/contrib/downloads/fjcontrib-1.041.tar.gz
 
 With fastjet-3.3.2.tar.gz in appropriate subdirectory (recommend keeping packages for physics in single well defined directory) do
 
