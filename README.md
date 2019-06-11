@@ -42,6 +42,11 @@ export PATH=$PATH:/PATH/TO/TAR/pythia8-build/bin
 
 Recommend adding above to your .bash_profile or .bashrc file so it is done w/ each fresh terminal session.
 
+On svmithi02 or lxplus do
+
+export PATH=$PATH:/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/PYTHIA8/pythia8-build/bin/
+
+
 **** FastJet INSTALL ****
 
 Get FastJet and contrib with
@@ -72,6 +77,10 @@ Finally with install complete go ahead and add the fastjet build directory to yo
 
 export PATH=$PATH:/PATH/TO/TAR/fastjet-install/bin
 
+if on svmithi02 or lxplus do
+
+PATH=$PATH:/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/FastJet/fastjet-install/bin/
+
 **** Running this repository ****
 
 For the convenience of the Makefile, start by editing setLearnGenJets.sh for the paths appropriate to your system. Doing this explicitly makes potential version conflicts easier to handle. Once you have added the full set of paths appropriate to your system, do
@@ -88,7 +97,9 @@ if build is successful, go ahead and run
 
 ./bin/simplePYTHIA.exe
 
-this will create a file w/ ttree containing particle content of pythia8 pp events at sqrts = 5.02 TeV, a very simple implementation of LHC like conditions with bias to hard scatterings of transverse energy of 80 GeV
+if this fails, check the global observable PYTHIA8DATA; if that is mismatched just set it to empty
+
+This will create a file w/ ttree containing particle content of pythia8 pp events at sqrts = 5.02 TeV, a very simple implementation of LHC like conditions with bias to hard scatterings of transverse energy of 80 GeV
 
 the file can be found under output/TODAYSDATE
 
