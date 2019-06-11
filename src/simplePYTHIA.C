@@ -1,0 +1,125 @@
+//cpp dependencies
+#include <iostream>
+#include <string>
+
+//ROOT dependencies
+#include "TDatime.h"
+#include "TFile.h"
+#include "TTree.h"
+
+//PYTHIA8 dependencies
+#include "Pythia8/Pythia.h"
+
+//Local dependencies
+#include "include/checkMakeDir.h"
+#include "include/pdgToMassInGeV.h"
+
+int simplePYTHIA()
+{
+  //Grab todays date and create some quick output directories
+  TDatime* date = new TDatime();
+  const std::string dateStr = std::to_string(date->GetDate());
+  delete date;
+
+  checkMakeDir("output");
+  checkMakeDir("output/" + dateStr);
+
+  //declare class to grab pdg mass of particles;
+  pdgToMassInGeV pdgToM;
+
+  //define a few kinematic cuts for event content appropriate to CMS
+  const Double_t minPartPt = 0.5;
+  const Double_t maxPartAbsEta = 5.1;
+  
+  //Open our output file and create the particle ttree we will write to
+  TFile* outFile_p = new TFile(("output/" + dateStr + "/simplePYTHIA8_" + dateStr + ".root").c_str(), "RECREATE");
+  TTree* particleTree_p = new TTree("particleTree", "");
+
+  Float_t pthat_;
+  
+  //Use arrays - vectors introduce ambiguities with which variable is linked to which from ttree output
+  const Int_t nMaxParticles = 1000;
+  Int_t nPart_;
+  Float_t pt_[nMaxParticles];
+  Float_t phi_[nMaxParticles];
+  Float_t eta_[nMaxParticles];
+  Float_t m_[nMaxParticles];
+  Int_t pdg_[nMaxParticles];
+
+  particleTree_p->Branch("pthat", &pthat_, "pthat/F");
+
+  particleTree_p->Branch("nPart", &nPart_, "nPart/I");
+  particleTree_p->Branch("pt", pt_, "pt[nPart]/F");
+  particleTree_p->Branch("phi", phi_, "phi[nPart]/F");
+  particleTree_p->Branch("eta", eta_, "eta[nPart]/F");
+  particleTree_p->Branch("m", m_, "m[nPart]/F");
+  particleTree_p->Branch("pdg", pdg_, "pdf[nPart]/I");
+
+  //Lets define PYTHIA8 generator
+  Pythia8::Pythia pythia;
+  pythia.readString("Beams:eCM = 5020.");//COM is in GeV so this is matched to PbPb Run2
+  pythia.readString("HardQCD:all = on");//Define processes, this is default hard qcd physics, what you would run for inclusive jet analysis (think 'everything')
+  pythia.readString("Random:setSeed = on");//We will set the seed defining our pseudo-random number generator
+  pythia.readString("Random:seed = 0");//Seed 0 gives unique random number tied to current time
+
+  pythia.readString("PhaseSpace:pTHatMin = 80"); // set the minimum scale of the hardscattering in GeV - here pick 80 just for quick jetphysics testing
+  pythia.readString("PhaseSpace:pTHatMax = 10000"); //set the maximum scale of the hardscattering in GeV
+
+  pythia.init(); // with all parameters set, initialize pythia
+  
+  const Int_t nEvt = 1000; // define set of events
+  //Loop to run PYTHIA and fill TTree
+  const Int_t nDiv = nEvt/20; //setup to do printouts per 5% progress
+
+  std::cout << "Running PYTHIA for " << nEvt << " events..." << std::endl;
+  while(particleTree_p->GetEntries() < nEvt){
+    if(!pythia.next()) continue; 
+
+    pthat_ = pythia.info.pTHat(); // grab pthat
+    nPart_ = 0; // initialize number of particles
+    
+    for(int i = 0; i < pythia.event.size(); ++i){//iterate over particles
+      if(!pythia.event[i].isFinal()) continue; // only take stable final state particles
+      if(pythia.event[i].pT() < minPartPt) continue; // assuming gev
+      if(TMath::Abs(pythia.event[i].eta()) > maxPartAbsEta) continue; // cut assuming rough detector geometry     
+
+      //We will skip the neutrinos as we really have no chance of working with them at colliders
+      if(TMath::Abs(pythia.event[i].id()) == 12) continue;
+      if(TMath::Abs(pythia.event[i].id()) == 14) continue;
+      if(TMath::Abs(pythia.event[i].id()) == 16) continue;
+
+      pt_[nPart_] = pythia.event[i].pT();
+      phi_[nPart_] = pythia.event[i].phi();
+      eta_[nPart_] = pythia.event[i].eta();
+      pdg_[nPart_] = pythia.event[i].id();
+      m_[nPart_] = pdgToM.getMassFromID(TMath::Abs(pythia.event[i].id()));
+
+      ++nPart_;
+    }
+
+    //silly to keep an empty event, so lets just ignore those
+    if(nPart_ == 0) continue;
+
+    if(particleTree_p->GetEntries()%nDiv == 0) std::cout << " Event " << particleTree_p->GetEntries() << "/" << nEvt << std::endl;
+    
+    particleTree_p->Fill();
+  }
+    
+  //Lets write the ttree to file and cleanup/close
+  outFile_p->cd();
+
+  particleTree_p->Write("", TObject::kOverwrite);
+  delete particleTree_p;
+
+  outFile_p->Close();
+  delete outFile_p;
+  
+  return 0;
+}
+
+int main()
+{
+  int retVal = 0;
+  retVal += simplePYTHIA();
+  return retVal;
+}

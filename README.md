@@ -11,6 +11,8 @@ http://fastjet.fr/
 
 You will also want to grab the fastjet contrib, version 1.041 as of creation.
 
+In addition to PYTHIA8 and FastJet, this code will use ROOT6 classes for storage. Source code and instructions for installation are beyond this repo, but you can look here if installation is necessary: https://root.cern.ch/downloading-root
+
 **** PYTHIA INSTALL ****
 
 With pythia8240.tar.gz in appropriate subdirectory (recommend keeping packages for physics in single well defined directory) do
@@ -53,3 +55,8 @@ make install
 
 **** Running this repository ****
 
+For the convenience of the Makefile, start by editing setLearnGenJets.sh for the paths appropriate to your system. Doing this explicitly makes potential version conflicts easier to handle. Once you have added the full set of paths appropriate to your system, do
+
+source setLearnGenJets.sh
+
+This will set those environmental variables for your session. If they are not set, running make will fail with request you run source.
