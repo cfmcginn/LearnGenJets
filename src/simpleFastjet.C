@@ -42,6 +42,7 @@ int simpleFastjet(const std::string inFileName)
   TFile* outFile_p = new TFile(outFileName.c_str(), "RECREATE");
   TTree* jetTree_p = new TTree("jetTree", "");
 
+  Float_t weight_;
   Float_t pthat_;
   
   //Use arrays - vectors introduce ambiguities with which variable is linked to which from ttree output
@@ -51,6 +52,8 @@ int simpleFastjet(const std::string inFileName)
   Float_t jtphi_[nMaxJets];
   Float_t jteta_[nMaxJets];
 
+  jetTree_p->Branch("weight", &weight_, "weight/F");
+  jetTree_p->Branch("pthat", &pthat_, "pthat/F");
   jetTree_p->Branch("nref", &nref_, "nref/I");
   jetTree_p->Branch("jtpt", jtpt_, "jtpt[nref]/F");
   jetTree_p->Branch("jtphi", jtphi_, "jtphi[nref]/F");
@@ -69,6 +72,7 @@ int simpleFastjet(const std::string inFileName)
 
   //Turn off all branches then turn on the needed ones
   particleTree_p->SetBranchStatus("*", 0);
+  particleTree_p->SetBranchStatus("weight", 1);
   particleTree_p->SetBranchStatus("pthat", 1);
   particleTree_p->SetBranchStatus("nPart", 1);
   particleTree_p->SetBranchStatus("pt", 1);
@@ -77,6 +81,7 @@ int simpleFastjet(const std::string inFileName)
   particleTree_p->SetBranchStatus("m", 1);
 
   //Set address for needed branches
+  particleTree_p->SetBranchAddress("weight", &weight_);
   particleTree_p->SetBranchAddress("pthat", &pthat_);
   particleTree_p->SetBranchAddress("nPart", &nPart_);
   particleTree_p->SetBranchAddress("pt", pt_);
@@ -109,7 +114,6 @@ int simpleFastjet(const std::string inFileName)
     fastjet::ClusterSequence csE(particles, jet_defE);
     //grab inclusive jets sorted by pt from cluster sequence.
     std::vector<fastjet::PseudoJet> jetsE = fastjet::sorted_by_pt(csE.inclusive_jets());
-
     
     //Now lets fill our jet tree variables
     nref_ = 0;

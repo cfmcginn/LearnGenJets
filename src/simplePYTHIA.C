@@ -5,6 +5,7 @@
 //ROOT dependencies
 #include "TDatime.h"
 #include "TFile.h"
+#include "TLorentzVector.h"
 #include "TTree.h"
 
 //PYTHIA8 dependencies
@@ -35,9 +36,17 @@ int simplePYTHIA()
   TFile* outFile_p = new TFile(("output/" + dateStr + "/simplePYTHIA8_" + dateStr + ".root").c_str(), "RECREATE");
   TTree* particleTree_p = new TTree("particleTree", "");
 
+  Float_t weight_ = 1.;
   Float_t pthat_;
   
   //Use arrays - vectors introduce ambiguities with which variable is linked to which from ttree output
+  const Int_t nQG = 2;
+  Float_t qgPt_[nQG];
+  Float_t qgEta_[nQG];
+  Float_t qgPhi_[nQG];
+  Float_t qgM_[nQG];
+  Int_t qgPDG_[nQG];
+
   const Int_t nMaxParticles = 1000;
   Int_t nPart_;
   Float_t pt_[nMaxParticles];
@@ -46,7 +55,14 @@ int simplePYTHIA()
   Float_t m_[nMaxParticles];
   Int_t pdg_[nMaxParticles];
 
+  particleTree_p->Branch("weight", &weight_, "weight/F");
   particleTree_p->Branch("pthat", &pthat_, "pthat/F");
+
+  particleTree_p->Branch("qgPt", qgPt_, ("qgPt[" + std::to_string(nQG) + "]/F").c_str());
+  particleTree_p->Branch("qgPhi", qgPhi_, ("qgPhi[" + std::to_string(nQG) + "]/F").c_str());
+  particleTree_p->Branch("qgEta", qgEta_, ("qgEta[" + std::to_string(nQG) + "]/F").c_str());
+  particleTree_p->Branch("qgM", qgM_, ("qgM[" + std::to_string(nQG) + "]/F").c_str());
+  particleTree_p->Branch("qgPDG", qgPDG_, ("qgPDG[" + std::to_string(nQG) + "]/I").c_str());
 
   particleTree_p->Branch("nPart", &nPart_, "nPart/I");
   particleTree_p->Branch("pt", pt_, "pt[nPart]/F");
@@ -77,7 +93,19 @@ int simplePYTHIA()
 
     pthat_ = pythia.info.pTHat(); // grab pthat
     nPart_ = 0; // initialize number of particles
-    
+
+    //Lets grab the initial hard scattering
+    TLorentzVector tL;
+    for(Int_t qI = 0; qI < nQG; ++qI){
+      tL.SetPxPyPzE(pythia.event[qI+5].px(), pythia.event[qI+5].py(), pythia.event[qI+5].pz(), pythia.event[qI+5].e());
+
+      qgPt_[qI] = tL.Pt();
+      qgPhi_[qI] = tL.Phi();
+      qgEta_[qI] = tL.Eta();
+      qgM_[qI] = tL.M();
+      qgPDG_[qI] = pythia.event[qI+5].id();
+    }
+
     for(int i = 0; i < pythia.event.size(); ++i){//iterate over particles
       if(!pythia.event[i].isFinal()) continue; // only take stable final state particles
       if(pythia.event[i].pT() < minPartPt) continue; // assuming gev
