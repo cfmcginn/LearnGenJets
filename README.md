@@ -111,3 +111,18 @@ or substitute your own pythia file
 
 this will create an output in output/TODAYSDATE with a jet TTree
 
+For studying the splitting function, we can switch to sipleFastjetWithZg.exe, which adds components of fastjet code from the contrib,
+
+./bin/simpleFastjet.exe output/TODAYSDATE/PYTHIAFILENAME
+
+this will create an output in output/TODAYSDATE with a jet TTree that also includes softdropped jets and splitting function observables for beta = 0 and zcut = 0.1
+
+finally we can run a plotter and look at our results with
+
+./bin/plotZG.exe <FASTJETFILEWITHZG>
+
+this will produce plots under pdfDir/TODAYSDATE, which you can dump into beamer .tex slides with
+
+bash bashDir/allDirToTex.sh pdfDir/TODAYSDATE 1
+
+and then look at in the corresponding locally created pdf of slides.
