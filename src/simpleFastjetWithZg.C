@@ -162,6 +162,8 @@ int simpleFastjetWithZg(const std::string inFileName)
     //Now lets fill our jet tree variables
     nref_ = 0;
     for(unsigned int jI = 0; jI < jetsE.size(); ++jI){
+      if(jetsE[jI].pt() < 15.) continue;
+
       jtpt_[nref_] = jetsE[jI].pt();
       jtphi_[nref_] = jetsE[jI].phi_std();
       jteta_[nref_] = jetsE[jI].eta();      
