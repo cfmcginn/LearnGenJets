@@ -79,7 +79,7 @@ export PATH=$PATH:/PATH/TO/TAR/fastjet-install/bin
 
 if on svmithi02 or lxplus do
 
-PATH=$PATH:/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/FastJet/fastjet-install/bin/
+export PATH=$PATH:/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/FastJet/fastjet-install/bin/
 
 **** Running this repository ****
 
