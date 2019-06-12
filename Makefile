@@ -17,9 +17,10 @@ INCLUDE=-I$(LEARNGENJETSDIR)
 ROOT=`root-config --cflags --glibs`
 PYTHIA8=-I$(PYTHIA8PATH)/include -O2 -pedantic -W -Wall -Wshadow -fPIC -L$(PYTHIA8PATH)/lib -Wl,-rpath,$(PYTHIA8PATH)/lib -lpythia8 -ldl
 FASTJET=`fastjet-config --cxxflags --libs`
+FJCONTRIB=-lRecursiveTools
 FASTJETINCLUDE=-I$(FASTJETPATH)
 
-all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe bin/simpleFastjet.exe
+all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe bin/simpleFastjet.exe bin/simpleFastjetWithZg.exe
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -35,6 +36,9 @@ bin/simplePYTHIA.exe: src/simplePYTHIA.C
 
 bin/simpleFastjet.exe: src/simpleFastjet.C
 	$(CXX) $(CXXFLAGS) src/simpleFastjet.C $(ROOT) $(FASTJET) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjet.exe
+
+bin/simpleFastjetWithZg.exe: src/simpleFastjetWithZg.C
+	$(CXX) $(CXXFLAGS) src/simpleFastjetWithZg.C $(ROOT) $(FASTJET) $(FJCONTRIB) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjetWithZg.exe
 
 clean:
 	rm -f ./*~
