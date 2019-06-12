@@ -16,7 +16,7 @@ MKDIR_PDF=mkdir -p $(PWD)/pdfDir
 INCLUDE=-I$(LEARNGENJETSDIR)
 ROOT=`root-config --cflags --glibs`
 PYTHIA8=-I$(PYTHIA8PATH)/include -O2 -pedantic -W -Wall -Wshadow -fPIC -L$(PYTHIA8PATH)/lib -Wl,-rpath,$(PYTHIA8PATH)/lib -lpythia8 -ldl
-FASTJET=`fastjet-config --cxxflags --libs`
+FASTJET=`/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/FastJet/fastjet-install/bin/fastjet-config --cxxflags --libs --plugins`
 FJCONTRIB=-lRecursiveTools
 FASTJETINCLUDE=-I$(FASTJETPATH)
 

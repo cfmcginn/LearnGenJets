@@ -37,7 +37,7 @@ int simpleFastjetWithZg(const std::string inFileName)
   //Lets base our output file name on input file name so dependencies are clearer
   std::string outFileName = inFileName.substr(0, inFileName.find(".root"));
   while(outFileName.find("/") != std::string::npos){outFileName.replace(0, outFileName.find("/")+1, "");}
-  outFileName = "output/" + dateStr + "/" + outFileName + "_JET_" + dateStr + ".root";
+  outFileName = "output/" + dateStr + "/" + outFileName + "_JETWITHZG_" + dateStr + ".root";
 
   
   //Open our output file and create the particle ttree we will write to
