@@ -17,6 +17,7 @@
 
 //Local dependencies
 #include "include/checkMakeDir.h"
+#include "include/etaPhiFunc.h"
 
 int simpleFastjetWithZg(const std::string inFileName)
 {
@@ -46,6 +47,8 @@ int simpleFastjetWithZg(const std::string inFileName)
 
   Float_t weight_;
   Float_t pthat_;
+
+  
   
   //Use arrays - vectors introduce ambiguities with which variable is linked to which from ttree output
   const Int_t nMaxJets = 500;
@@ -53,7 +56,8 @@ int simpleFastjetWithZg(const std::string inFileName)
   Float_t jtpt_[nMaxJets];
   Float_t jtphi_[nMaxJets];
   Float_t jteta_[nMaxJets];
-
+  Int_t jtflavor_[nMaxJets];
+  
   //Add some softdrop variables for the ttree
   Float_t jtptSD_[nMaxJets];
   Float_t jtphiSD_[nMaxJets];
@@ -68,7 +72,8 @@ int simpleFastjetWithZg(const std::string inFileName)
   jetTree_p->Branch("jtpt", jtpt_, "jtpt[nref]/F");
   jetTree_p->Branch("jtphi", jtphi_, "jtphi[nref]/F");
   jetTree_p->Branch("jteta", jteta_, "jteta[nref]/F");
-
+  jetTree_p->Branch("jtflavor", jtflavor_, "jtflavor[nref]/I");
+ 
   jetTree_p->Branch("jtptSD", jtptSD_, "jtptSD[nref]/F");
   jetTree_p->Branch("jtphiSD", jtphiSD_, "jtphiSD[nref]/F");
   jetTree_p->Branch("jtetaSD", jtetaSD_, "jtetaSD[nref]/F");
@@ -79,6 +84,11 @@ int simpleFastjetWithZg(const std::string inFileName)
   //Now grab the input
   TFile* inFile_p = new TFile(inFileName.c_str(), "READ");
   TTree* particleTree_p = (TTree*)inFile_p->Get("particleTree");
+
+  const Int_t nQG = 2;
+  Float_t qgEta_[nQG];
+  Float_t qgPhi_[nQG];
+  Int_t qgPDG_[nQG];
   
   const Int_t nMaxParticles = 1000;
   Int_t nPart_;
@@ -91,6 +101,11 @@ int simpleFastjetWithZg(const std::string inFileName)
   particleTree_p->SetBranchStatus("*", 0);
   particleTree_p->SetBranchStatus("weight", 1);
   particleTree_p->SetBranchStatus("pthat", 1);
+
+  particleTree_p->SetBranchStatus("qgPhi", 1);
+  particleTree_p->SetBranchStatus("qgEta", 1);
+  particleTree_p->SetBranchStatus("qgPDG", 1);
+  
   particleTree_p->SetBranchStatus("nPart", 1);
   particleTree_p->SetBranchStatus("pt", 1);
   particleTree_p->SetBranchStatus("phi", 1);
@@ -100,6 +115,11 @@ int simpleFastjetWithZg(const std::string inFileName)
   //Set address for needed branches
   particleTree_p->SetBranchAddress("weight", &weight_);
   particleTree_p->SetBranchAddress("pthat", &pthat_);
+
+  particleTree_p->SetBranchAddress("qgPhi", qgPhi_);
+  particleTree_p->SetBranchAddress("qgEta", qgEta_);
+  particleTree_p->SetBranchAddress("qgPDG", qgPDG_);
+  
   particleTree_p->SetBranchAddress("nPart", &nPart_);
   particleTree_p->SetBranchAddress("pt", pt_);
   particleTree_p->SetBranchAddress("phi", phi_);
@@ -136,7 +156,8 @@ int simpleFastjetWithZg(const std::string inFileName)
     fastjet::ClusterSequence csE(particles, jet_defE);
     //grab inclusive jets sorted by pt from cluster sequence.
     std::vector<fastjet::PseudoJet> jetsE = fastjet::sorted_by_pt(csE.inclusive_jets());
-    
+
+    bool qgIsUsed[nQG] = {false, false};
     
     //Now lets fill our jet tree variables
     nref_ = 0;
@@ -144,6 +165,16 @@ int simpleFastjetWithZg(const std::string inFileName)
       jtpt_[nref_] = jetsE[jI].pt();
       jtphi_[nref_] = jetsE[jI].phi_std();
       jteta_[nref_] = jetsE[jI].eta();      
+
+      for(Int_t qI = 0; qI < nQG; ++qI){
+        if(qgIsUsed[qI]) continue; //no double matching
+
+	//simple geometric matching, ordered by jet pt
+	if(getDR(jteta_[nref_], jtphi_[nref_], qgEta_[qI], qgPhi_[qI]) < 0.4){
+          jtflavor_[nref_] = qgPDG_[qI];
+          qgIsUsed[qI] = true;
+        }
+      }
 
       //Adding softdrop processing
       fastjet::PseudoJet sdJet = sd(jetsE[jI]);

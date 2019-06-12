@@ -20,7 +20,7 @@ FASTJET=`fastjet-config --cxxflags --plugins --libs`
 FJCONTRIB=-lRecursiveTools
 FASTJETINCLUDE=-I$(FASTJETPATH)
 
-all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe bin/advancedPYTHIA.exe bin/simpleFastjet.exe bin/simpleFastjetWithZg.exe
+all: mkdirBin mkdirOutput mkdirPdf bin/simplePYTHIA.exe bin/advancedPYTHIA.exe bin/simpleFastjet.exe bin/simpleFastjetWithZg.exe bin/plotZG.exe
 
 mkdirBin:
 	$(MKDIR_BIN)
@@ -42,6 +42,9 @@ bin/simpleFastjet.exe: src/simpleFastjet.C
 
 bin/simpleFastjetWithZg.exe: src/simpleFastjetWithZg.C
 	$(CXX) $(CXXFLAGS) src/simpleFastjetWithZg.C $(ROOT) $(FJCONTRIB) $(FASTJET) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjetWithZg.exe
+
+bin/plotZG.exe: src/plotZG.C
+	$(CXX) $(CXXFLAGS) src/plotZG.C $(ROOT) $(INCLUDE) -o bin/plotZG.exe
 
 clean:
 	rm -f ./*~
