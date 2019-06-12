@@ -4,8 +4,10 @@
 
 //ROOT dependencies
 #include "TDatime.h"
+#include "TDirectoryFile.h"
 #include "TFile.h"
 #include "TLorentzVector.h"
+#include "TNamed.h"
 #include "TTree.h"
 
 //PYTHIA8 dependencies
@@ -15,7 +17,7 @@
 #include "include/checkMakeDir.h"
 #include "include/pdgToMassInGeV.h"
 
-int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight = false, const double weightPower = 4.5, const double pthatMin = 15., const double pthatMax = 10000.)
+int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight = false, const double weightPower = 4.5, const double pthatMin = 15., const double pthatMax = 10000., const int seed = 0)
 {
   //Grab todays date and create some quick output directories
   TDatime* date = new TDatime();
@@ -35,7 +37,8 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   //Open our output file and create the particle ttree we will write to
   TFile* outFile_p = new TFile(("output/" + dateStr + "/advancedPYTHIA8_" + dateStr + ".root").c_str(), "RECREATE");
   TTree* particleTree_p = new TTree("particleTree", "");
-
+  TDirectory* dir_p = outFile_p->mkdir("paramDir");
+  
   Float_t weight_ = 1.;
   Float_t pthat_;
   
@@ -76,7 +79,7 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   pythia.readString(("Beams:eCM = " + std::to_string(comE) + "").c_str());//COM is in GeV so this is matched to PbPb Run2
   pythia.readString("HardQCD:all = on");//Define processes, this is default hard qcd physics, what you would run for inclusive jet analysis (think 'everything')
   pythia.readString("Random:setSeed = on");//We will set the seed defining our pseudo-random number generator
-  pythia.readString("Random:seed = 0");//Seed 0 gives unique random number tied to current time
+  pythia.readString(("Random:seed = " + std::to_string(seed)).c_str());//Seed 0 gives unique random number tied to current time
 
   pythia.readString(("PhaseSpace:pTHatMin = " + std::to_string(pthatMin)).c_str()); // set the minimum scale of the hardscattering in GeV - here pick 80 just for quick jetphysics testing
   pythia.readString(("PhaseSpace:pTHatMax = " + std::to_string(pthatMax)).c_str()); //set the maximum scale of the hardscattering in GeV
@@ -145,6 +148,23 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   particleTree_p->Write("", TObject::kOverwrite);
   delete particleTree_p;
 
+  dir_p->cd();
+  TNamed nEvtName("nEvt", std::to_string(nEvt).c_str());
+  nEvtName.Write("", TObject::kOverwrite);
+  TNamed comEName("comE", std::to_string(comE).c_str());
+  comEName.Write("", TObject::kOverwrite);
+  TNamed doPthatWeightName("doPthatWeight", std::to_string(doPthatWeight).c_str());
+  doPthatWeightName.Write("", TObject::kOverwrite);
+  TNamed weightPowerName("weightPower", std::to_string(weightPower).c_str());
+  weightPowerName.Write("", TObject::kOverwrite);
+  TNamed pthatMinName("pthatMin", std::to_string(pthatMin).c_str());
+  pthatMinName.Write("", TObject::kOverwrite);
+  TNamed pthatMaxName("pthatMax", std::to_string(pthatMax).c_str());
+  pthatMaxName.Write("", TObject::kOverwrite);
+  TNamed seedName("seed", std::to_string(seed).c_str());
+  seedName.Write("", TObject::kOverwrite);
+
+  
   outFile_p->Close();
   delete outFile_p;
   
@@ -153,8 +173,8 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
 
 int main(int argc, char* argv[])
 {
-  if(argc > 7 || argc < 2){
-    std::cout << "Usage: ./bin/advancedPYTHIA.exe <nEvt> <comE-default5020> <doPthatWeight-defaultFalse> <weightPower-default4.5> <pthatMin-default15> <pthatMax-default10000>" << std::endl;
+  if(argc > 8 || argc < 2){
+    std::cout << "Usage: ./bin/advancedPYTHIA.exe <nEvt> <comE-default5020> <doPthatWeight-defaultFalse> <weightPower-default4.5> <pthatMin-default15> <pthatMax-default10000> <seed-default0>" << std::endl;
     return 1;
   }
 
@@ -167,6 +187,7 @@ int main(int argc, char* argv[])
   else if(argc == 5) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]), std::stod(argv[4]));
   else if(argc == 6) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]), std::stod(argv[4]), std::stod(argv[5]));
   else if(argc == 7) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]));
+  else if(argc == 8) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]), std::stod(argv[4]), std::stod(argv[5]), std::stod(argv[6]), std::stoi(argv[7]));
 
   return retVal;
 }
