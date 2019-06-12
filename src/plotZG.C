@@ -7,6 +7,7 @@
 #include "TDatime.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TLatex.h"
 #include "TLegend.h"
 #include "TStyle.h"
 #include "TTree.h"
@@ -89,8 +90,8 @@ int plotZg(const std::string inFileName)
   TH1D* rg_h[nQG+1];
 
   for(Int_t qI = 0; qI < nQG+1; ++qI){
-    zg_h[qI] = new TH1D(("zg_" + qgStr[qI] + "_h").c_str(), ";z_{g};Counts", 20, 0.0, 0.5);
-    rg_h[qI] = new TH1D(("rg_" + qgStr[qI] + "_h").c_str(), ";r_{g};Counts", 20, 0.0, 0.4);
+    zg_h[qI] = new TH1D(("zg_" + qgStr[qI] + "_h").c_str(), ";z_{g};Weighted Counts", 20, 0.0, 0.5);
+    rg_h[qI] = new TH1D(("rg_" + qgStr[qI] + "_h").c_str(), ";r_{g};Weighted Counts", 20, 0.0, 0.4);
 
     if(doWeighted){
       zg_h[qI]->Sumw2();
@@ -141,6 +142,11 @@ int plotZg(const std::string inFileName)
     }
   }
 
+  TLatex* label_p = new TLatex();
+  label_p->SetTextFont(43);
+  label_p->SetTextSize(15);
+  label_p->SetNDC();
+  
   TLegend* leg_p = new TLegend(0.7, 0.7, 0.95, 0.95);
   leg_p->SetBorderSize(0);
   leg_p->SetFillColor(0);
@@ -180,7 +186,10 @@ int plotZg(const std::string inFileName)
   
   gStyle->SetOptStat(0);
 
+  label_p->DrawLatex(0.6, 0.96, "PYTHIA 8, #sqrt{s_{NN}}=5.02 TeV");
   leg_p->Draw("SAME");
+  label_p->DrawLatex(0.7, 0.65, ("Jet p_{T} > " + std::to_string((int)jtPtMin)).c_str());
+  label_p->DrawLatex(0.7, 0.6, ("Jet |#eta| < " + std::to_string((int)absEtaMax)).c_str());
   
   canv_p->SaveAs(("pdfDir/" + dateStr + "/zg_" + dateStr + ".pdf").c_str());
   delete canv_p;
@@ -213,12 +222,16 @@ int plotZg(const std::string inFileName)
 
   gStyle->SetOptStat(0);
 
+  label_p->DrawLatex(0.6, 0.96, "PYTHIA 8, #sqrt{s_{NN}}=5.02 TeV");
   leg_p->Draw("SAME");
+  label_p->DrawLatex(0.7, 0.65, ("Jet p_{T} > " + std::to_string((int)jtPtMin)).c_str());
+  label_p->DrawLatex(0.7, 0.6, ("Jet |#eta| < " + std::to_string((int)absEtaMax)).c_str());
 
   canv_p->SaveAs(("pdfDir/" + dateStr + "/rg_" + dateStr + ".pdf").c_str());
   delete canv_p;
 
   delete leg_p;
+  delete label_p;
   
   //cleanup hist
   for(Int_t qI = 0; qI < nQG+1; ++qI){
