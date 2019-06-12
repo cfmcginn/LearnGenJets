@@ -18,8 +18,8 @@ void defineCanv(TCanvas* canv_p)
 {
   canv_p->SetTopMargin(0.01);
   canv_p->SetRightMargin(0.01);
-  canv_p->SetLeftMargin(0.1);
-  canv_p->SetBottomMargin(0.1);
+  canv_p->SetLeftMargin(0.15);
+  canv_p->SetBottomMargin(0.15);
   
   return;
 }
