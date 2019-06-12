@@ -15,7 +15,7 @@
 #include "include/checkMakeDir.h"
 #include "include/pdgToMassInGeV.h"
 
-int advancedPYTHIA(const int nEvt = 1000, const double comE = 5020., bool doPthatWeight = false, const double weightPower = 4.5, const double pthatMin = 15., const double pthatMax = 10000.)
+int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight = false, const double weightPower = 4.5, const double pthatMin = 15., const double pthatMax = 10000.)
 {
   //Grab todays date and create some quick output directories
   TDatime* date = new TDatime();
@@ -153,16 +153,15 @@ int advancedPYTHIA(const int nEvt = 1000, const double comE = 5020., bool doPtha
 
 int main(int argc, char* argv[])
 {
-  if(argc > 7){
-    std::cout << "Usage: ./bin/advancedPYTHIA.exe <nEvt-default1000> <comE-default5020> <doPthatWeight-defaultFalse> <weightPower-default4.5> <pthatMin-default15> <pthatMax-default10000>" << std::endl;
+  if(argc > 7 || argc < 2){
+    std::cout << "Usage: ./bin/advancedPYTHIA.exe <nEvt> <comE-default5020> <doPthatWeight-defaultFalse> <weightPower-default4.5> <pthatMin-default15> <pthatMax-default10000>" << std::endl;
     return 1;
   }
 
   
   int retVal = 0;
 
-  if(argc == 1) retVal += advancedPYTHIA();
-  else if(argc == 2) retVal += advancedPYTHIA(std::stoi(argv[1]));
+  if(argc == 2) retVal += advancedPYTHIA(std::stoi(argv[1]));
   else if(argc == 3) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]));
   else if(argc == 4) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]));
   else if(argc == 5) retVal += advancedPYTHIA(std::stoi(argv[1]), std::stod(argv[2]), std::stoi(argv[3]), std::stod(argv[4]));
