@@ -16,7 +16,7 @@ MKDIR_PDF=mkdir -p $(PWD)/pdfDir
 INCLUDE=-I$(LEARNGENJETSDIR)
 ROOT=`root-config --cflags --glibs`
 PYTHIA8=-I$(PYTHIA8PATH)/include -O2 -pedantic -W -Wall -Wshadow -fPIC -L$(PYTHIA8PATH)/lib -Wl,-rpath,$(PYTHIA8PATH)/lib -lpythia8 -ldl
-FASTJET=`fastjet-config --cxxflags --libs --plugins`
+FASTJET=`fastjet-config --cxxflags --plugins --libs`
 FJCONTRIB=-lRecursiveTools
 FASTJETINCLUDE=-I$(FASTJETPATH)
 
@@ -38,7 +38,7 @@ bin/simpleFastjet.exe: src/simpleFastjet.C
 	$(CXX) $(CXXFLAGS) src/simpleFastjet.C $(ROOT) $(FASTJET) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjet.exe
 
 bin/simpleFastjetWithZg.exe: src/simpleFastjetWithZg.C
-	$(CXX) $(CXXFLAGS) src/simpleFastjetWithZg.C $(ROOT) $(FASTJET) $(FJCONTRIB) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjetWithZg.exe
+	$(CXX) $(CXXFLAGS) src/simpleFastjetWithZg.C $(ROOT) $(FJCONTRIB) $(FASTJET) $(INCLUDE) $(FASTJETINCLUDE) -o bin/simpleFastjetWithZg.exe
 
 clean:
 	rm -f ./*~
