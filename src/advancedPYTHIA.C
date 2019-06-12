@@ -35,7 +35,7 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   const Double_t maxPartAbsEta = 5.1;
   
   //Open our output file and create the particle ttree we will write to
-  TFile* outFile_p = new TFile(("output/" + dateStr + "/advancedPYTHIA8_" + dateStr + ".root").c_str(), "RECREATE");
+  TFile* outFile_p = new TFile(("output/" + dateStr + "/advancedPYTHIA8_Seed" + std::to_string(seed) + "_" + dateStr + ".root").c_str(), "RECREATE");
   TTree* particleTree_p = new TTree("particleTree", "");
   TDirectory* dir_p = outFile_p->mkdir("paramDir");
   
