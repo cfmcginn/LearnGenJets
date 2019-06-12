@@ -7,5 +7,5 @@ export PYTHIA8PATH=/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/PYTHI
 export FASTJETPATH=/afs/cern.ch/work/c/cmcginn/public/Packages/ForLearning/FastJet/fastjet-install
 
 
-echo "SETTING NEW ENVIRONMENT VARIABLE FULLJRDIR AS '$PWD'"
+echo "SETTING NEW ENVIRONMENT VARIABLE LEARNGENJETSDIR AS '$PWD'"
 echo "All environment variables set"
