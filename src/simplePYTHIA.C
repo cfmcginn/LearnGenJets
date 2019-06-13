@@ -69,7 +69,7 @@ int simplePYTHIA()
   particleTree_p->Branch("phi", phi_, "phi[nPart]/F");
   particleTree_p->Branch("eta", eta_, "eta[nPart]/F");
   particleTree_p->Branch("m", m_, "m[nPart]/F");
-  particleTree_p->Branch("pdg", pdg_, "pdf[nPart]/I");
+  particleTree_p->Branch("pdg", pdg_, "pdg[nPart]/I");
 
   //Lets define PYTHIA8 generator
   Pythia8::Pythia pythia;

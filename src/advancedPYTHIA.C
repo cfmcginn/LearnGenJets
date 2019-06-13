@@ -56,6 +56,7 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   Float_t phi_[nMaxParticles];
   Float_t eta_[nMaxParticles];
   Float_t m_[nMaxParticles];
+  Int_t chg_[nMaxParticles];
   Int_t pdg_[nMaxParticles];
 
   particleTree_p->Branch("weight", &weight_, "weight/F");
@@ -72,7 +73,8 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
   particleTree_p->Branch("phi", phi_, "phi[nPart]/F");
   particleTree_p->Branch("eta", eta_, "eta[nPart]/F");
   particleTree_p->Branch("m", m_, "m[nPart]/F");
-  particleTree_p->Branch("pdg", pdg_, "pdf[nPart]/I");
+  particleTree_p->Branch("chg", chg_, "chg[nPart]/I");
+  particleTree_p->Branch("pdg", pdg_, "pdg[nPart]/I");
 
   //Lets define PYTHIA8 generator
   Pythia8::Pythia pythia;
@@ -128,6 +130,7 @@ int advancedPYTHIA(const int nEvt, const double comE = 5020., bool doPthatWeight
       pt_[nPart_] = pythia.event[i].pT();
       phi_[nPart_] = pythia.event[i].phi();
       eta_[nPart_] = pythia.event[i].eta();
+      chg_[nPart_] = pythia.event[i].charge();
       pdg_[nPart_] = pythia.event[i].id();
       m_[nPart_] = pdgToM.getMassFromID(TMath::Abs(pythia.event[i].id()));
 
